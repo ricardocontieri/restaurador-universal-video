@@ -75,4 +75,4 @@ This is a practical restoration tool rather than a polished commercial product. 
 
 ## License
 
-An open-source license has not yet been selected. The repository is public to evaluate interest and technical collaboration. A license should be chosen before broader redistribution/use is encouraged.
+Released under the [MIT License](LICENSE). You may use, modify, fork, redistribute and incorporate the project into other work under the terms of that license.
