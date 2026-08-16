@@ -1,0 +1,43 @@
+name: Assemble published source
+
+on:
+  push:
+    paths:
+      - 'src-bootstrap/READY.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rebuild source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat src-bootstrap/payload.part* > /tmp/payload.b64
+          base64 -d /tmp/payload.b64 > /tmp/restaurador_sources_payload.tar.gz
+          echo 'd2467e9dc14b6326e2945f1b447e0b7bec8d0c4d64316f46ada1b5b4c955e02f  /tmp/restaurador_sources_payload.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/restaurador_sources_payload.tar.gz -C .
+          echo 'c827376be8aad3efd2217aec1e7b0b8fde7a8450a664c6dd3f7aeae52d97c8c4  src/RestauradorUniversal.ps1' | sha256sum -c -
+          test -f legacy/alpha/internal-v1.0-alpha.ps1
+          test -f legacy/alpha/internal-v1.4-alpha.ps1
+          test -f legacy/beta/internal-v1.5-beta.ps1
+          test -f legacy/beta/internal-v1.6.3.2-beta.ps1
+          ! grep -q -- '-filter_complex_script' src/RestauradorUniversal.ps1
+          ! grep -qF '[string[]]$Args' src/RestauradorUniversal.ps1
+
+      - name: Commit public 1.0.0 and historical lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f src-bootstrap/payload.part*
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src legacy src-bootstrap
+          git commit -m 'Publish public v1.0.0 source and preserve alpha/beta lineage'
+          git push
