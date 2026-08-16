@@ -1,0 +1,57 @@
+name: Publish v1.0.0
+
+on:
+  push:
+    paths:
+      - 'release-bootstrap/READY.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify public source and lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'c827376be8aad3efd2217aec1e7b0b8fde7a8450a664c6dd3f7aeae52d97c8c4  src/RestauradorUniversal.ps1' | sha256sum -c -
+          test -f LICENSE
+          test -f legacy/SHA256SUMS.txt
+          test -f legacy/alpha/internal-v1.0-alpha.ps1
+          test -f legacy/alpha/internal-v1.4-alpha.ps1
+          test -f legacy/beta/internal-v1.5-beta.ps1
+          test -f legacy/beta/internal-v1.6.3.2-beta.ps1
+
+      - name: Finalize clean release commit and tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f release-bootstrap/READY.txt
+          rmdir release-bootstrap 2>/dev/null || true
+          rm -f .github/workflows/publish-v1.0.0.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Finalize public v1.0.0 release'
+          git tag -a v1.0.0 -m 'Universal Video Restorer 1.0.0 - first public release'
+          git push origin HEAD:main
+          git push origin v1.0.0
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create v1.0.0 \
+            --repo '${{ github.repository }}' \
+            --verify-tag \
+            --title 'Universal Video Restorer 1.0.0' \
+            --notes 'First public release of Universal Video Restorer. Public 1.0.0 is derived from the tested internal V1.6.3.2 lineage. Earlier internal builds are preserved as alpha/beta snapshots under legacy/, with SHA-256 provenance manifest. Licensed under MIT.'
