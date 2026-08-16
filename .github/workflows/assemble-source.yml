@@ -15,19 +15,83 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rebuild source archive
+      - name: Rebuild internal alpha/beta lineage
         shell: bash
         run: |
           set -euo pipefail
-          cat src-bootstrap/payload.part* > /tmp/payload.b64
-          base64 -d /tmp/payload.b64 > /tmp/restaurador_sources_payload.tar.gz
-          echo 'd2467e9dc14b6326e2945f1b447e0b7bec8d0c4d64316f46ada1b5b4c955e02f  /tmp/restaurador_sources_payload.tar.gz' | sha256sum -c -
-          tar -xzf /tmp/restaurador_sources_payload.tar.gz -C .
+          mkdir -p /tmp/legacy-chain legacy/alpha legacy/beta src
+          cat src-bootstrap/legacy.part* > /tmp/legacy-chain.b64
+          base64 -d /tmp/legacy-chain.b64 > /tmp/legacy_chain.tar.gz
+          echo '321590fc239086f8af21a6d48809aba432a6e78d6fa498b30cacd736c5f68d38  /tmp/legacy_chain.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/legacy_chain.tar.gz -C /tmp/legacy-chain
+          gzip -dc /tmp/legacy-chain/internal-v1.6.3.2-beta.ps1.gz > /tmp/legacy-chain/current.ps1
+          cp /tmp/legacy-chain/current.ps1 legacy/beta/internal-v1.6.3.2-beta.ps1
+
+          apply_and_copy() {
+            patch_file="$1"
+            target="$2"
+            patch -s /tmp/legacy-chain/current.ps1 < "/tmp/legacy-chain/$patch_file"
+            cp /tmp/legacy-chain/current.ps1 "$target"
+          }
+
+          apply_and_copy '13_v1.6.3.2-beta_to_v1.6.3.1-beta.patch' 'legacy/beta/internal-v1.6.3.1-beta.ps1'
+          apply_and_copy '12_v1.6.3.1-beta_to_v1.6.3-beta.patch' 'legacy/beta/internal-v1.6.3-beta.ps1'
+          apply_and_copy '11_v1.6.3-beta_to_v1.6.2-beta.patch' 'legacy/beta/internal-v1.6.2-beta.ps1'
+          apply_and_copy '10_v1.6.2-beta_to_v1.6.1-beta.patch' 'legacy/beta/internal-v1.6.1-beta.ps1'
+          apply_and_copy '09_v1.6.1-beta_to_v1.6-beta.patch' 'legacy/beta/internal-v1.6-beta.ps1'
+          apply_and_copy '08_v1.6-beta_to_v1.5-beta.patch' 'legacy/beta/internal-v1.5-beta.ps1'
+          apply_and_copy '07_v1.5-beta_to_v1.4-alpha.patch' 'legacy/alpha/internal-v1.4-alpha.ps1'
+          apply_and_copy '06_v1.4-alpha_to_v1.3-alpha.patch' 'legacy/alpha/internal-v1.3-alpha.ps1'
+          apply_and_copy '05_v1.3-alpha_to_v1.2.2-alpha.patch' 'legacy/alpha/internal-v1.2.2-alpha.ps1'
+          apply_and_copy '04_v1.2.2-alpha_to_v1.2.1-alpha.patch' 'legacy/alpha/internal-v1.2.1-alpha.ps1'
+          apply_and_copy '03_v1.2.1-alpha_to_v1.2-alpha.patch' 'legacy/alpha/internal-v1.2-alpha.ps1'
+          apply_and_copy '02_v1.2-alpha_to_v1.1-alpha.patch' 'legacy/alpha/internal-v1.1-alpha.ps1'
+          apply_and_copy '01_v1.1-alpha_to_v1.0-alpha.patch' 'legacy/alpha/internal-v1.0-alpha.ps1'
+
+      - name: Verify exact historical snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/SHA256SUMS <<'EOF'
+          8b1616c42f98499af06b019a00327b4ea11796d4406465c13d6e70d52570d4e4  legacy/alpha/internal-v1.0-alpha.ps1
+          e21c3a1fd22412cdee6134cc15a7740f608a293029d10d80955a7e88edbbf130  legacy/alpha/internal-v1.1-alpha.ps1
+          1906f8f0353ecc8d9f97a90e85f1017048644989b3aa50fe0c58f5eee293ce31  legacy/alpha/internal-v1.2-alpha.ps1
+          154b8415a9f7a1ad23ca6ac556c124d90596013985241bc6a36291c8ed080a1f  legacy/alpha/internal-v1.2.1-alpha.ps1
+          f7d3183aa9a4ee3b0de7046516c82688b235513e7a894f5800045ca8952fc4ff  legacy/alpha/internal-v1.2.2-alpha.ps1
+          425e58b666cffd7229211b970a13f53b023540987f237a5f57fb8ffba651a0c2  legacy/alpha/internal-v1.3-alpha.ps1
+          52ac41e5afb8f966418dbdb591a8901109b7220c49c41ea226950aff5ac1c422  legacy/alpha/internal-v1.4-alpha.ps1
+          fd428a0e8285e7b4a48deb5bd096aedc3196da98c1c5c82af792fce501f55d9e  legacy/beta/internal-v1.5-beta.ps1
+          6a642313ccebebcadee73edb30594bd2ac2e4998a04d709f73480b0387092f94  legacy/beta/internal-v1.6-beta.ps1
+          a6ea5b62ea9bd3f63b6dab92f0f55ed1749aa6feb1d1e4a3a6b3b831e9431577  legacy/beta/internal-v1.6.1-beta.ps1
+          edbbbdfbb0a37f9db52a2f6e85d738da827e786f957aec28d0b75e40b6712d69  legacy/beta/internal-v1.6.2-beta.ps1
+          16705b39e5b44b023eed15be9f6cc1c56f2f2015a146ef2595540830ada2fe7d  legacy/beta/internal-v1.6.3-beta.ps1
+          73f156ce655cfcb26f972c50c18026f02148cc0bdb43c89e0f17776f44653145  legacy/beta/internal-v1.6.3.1-beta.ps1
+          d9a6a1c2799726c719d8ba7903e6225e4a637a93e710f6c80d45a797ce77fe74  legacy/beta/internal-v1.6.3.2-beta.ps1
+          EOF
+          sha256sum -c /tmp/SHA256SUMS
+          cp /tmp/SHA256SUMS legacy/SHA256SUMS.txt
+
+      - name: Derive public 1.0.0 from tested internal V1.6.3.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          src = Path('legacy/beta/internal-v1.6.3.2-beta.ps1').read_text(encoding='utf-8-sig')
+          old = 'Write-Host " RESTAURADOR UNIVERSAL DE VIDEOS V1.6.3.2 - SMART DUAL GPU / ARCHIVE DATE VALIDATION FIX / 1080P / STAB / PILLAR BLUR" `'
+          new = 'Write-Host " RESTAURADOR UNIVERSAL DE VIDEOS 1.0.0 PUBLIC - SMART DUAL GPU / ARCHIVE DATE VALIDATION / 1080P / STAB / PILLAR BLUR" `'
+          if old not in src:
+              raise SystemExit('Internal V1.6.3.2 banner not found')
+          src = src.replace(old, new, 1)
+          header = (
+              '# Universal Video Restorer 1.0.0\n'
+              '# Public release derived from internal build V1.6.3.2.\n'
+              '# License: MIT. See repository LICENSE.\n'
+              '# Internal checkpoint identifiers are intentionally preserved for compatibility/provenance.\n\n'
+          )
+          Path('src/RestauradorUniversal.ps1').write_text(header + src, encoding='utf-8-sig')
+          PY
           echo 'c827376be8aad3efd2217aec1e7b0b8fde7a8450a664c6dd3f7aeae52d97c8c4  src/RestauradorUniversal.ps1' | sha256sum -c -
-          test -f legacy/alpha/internal-v1.0-alpha.ps1
-          test -f legacy/alpha/internal-v1.4-alpha.ps1
-          test -f legacy/beta/internal-v1.5-beta.ps1
-          test -f legacy/beta/internal-v1.6.3.2-beta.ps1
           ! grep -q -- '-filter_complex_script' src/RestauradorUniversal.ps1
           ! grep -qF '[string[]]$Args' src/RestauradorUniversal.ps1
 
@@ -35,7 +99,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f src-bootstrap/payload.part*
+          rm -f src-bootstrap/legacy.part*
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src legacy src-bootstrap
