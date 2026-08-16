@@ -24,7 +24,8 @@ Highlights:
 - strict final frame-count validation and smoke-decode;
 - historical metadata/source tracking with explicit provenance;
 - metadata-only stream-copy maintenance mode;
-- safe fast-resume of already validated final masters.
+- safe fast-resume of already validated final masters;
+- project released under the MIT License to permit forks, modification and redistribution.
 
 ### Preservation policy at 1.0.0
 
