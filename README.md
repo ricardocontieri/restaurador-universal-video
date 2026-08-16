@@ -69,6 +69,12 @@ Forks, codec/hardware reports and improvements are welcome. Please read [CONTRIB
 
 Do not upload private family media just to demonstrate a bug. Prefer synthetic or non-sensitive samples.
 
+## Real-world case studies
+
+The repository keeps sanitized regression records from real archival runs so fixes remain reproducible without publishing private media.
+
+- [Unicode-safe concat after frame-exact segmented restoration](docs/case-studies/unicode-frame-exact-regression.md) — documents a late-stage concat failure caused by a Unicode parent path, the relative ASCII-path fix, checkpoint reuse, 173 timeline segments and successful 4/4 final validation.
+
 ## Project status
 
 This is a practical restoration tool rather than a polished commercial product. The first public baseline reflects the pipeline that survived multiple real archival batches, including legacy VFR MPEG-1 and very short clips. There are still known areas for improvement; see [ROADMAP.md](docs/ROADMAP.md).
