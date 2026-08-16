@@ -75,4 +75,4 @@ Este é um instrumento prático de restauração, não um produto comercial poli
 
 ## Licença
 
-Ainda não foi escolhida uma licença open source. O repositório está público para avaliar interesse e colaboração técnica. Antes de incentivar reutilização e redistribuição mais ampla, uma licença deverá ser definida explicitamente.
+Distribuído sob a [Licença MIT](LICENSE). É permitido usar, modificar, fazer fork, redistribuir e incorporar o projeto a outros trabalhos nos termos dessa licença.
