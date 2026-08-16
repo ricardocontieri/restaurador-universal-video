@@ -53,6 +53,6 @@ Do not upload private family media to the repository. Prefer synthetic fixtures 
 
 Public releases follow semantic versioning. Historical internal builds are documented as alpha/beta development lineage; do not renumber or rewrite them.
 
-## License note
+## License
 
-The repository does not yet declare an open-source license. Contributions/forking policy should be revisited when a license is selected.
+By contributing code or documentation to this repository, you agree that your contribution may be distributed under the project's [MIT License](LICENSE). Forks and derivative works are welcome under the same license terms.
