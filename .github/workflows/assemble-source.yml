@@ -15,6 +15,94 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify and repair staged Base64 chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import string
+
+          expected = {
+              'legacy.part000': (8000, '4e00379315a52b788399d419c257c5ef766e3c19'),
+              'legacy.part001': (8000, 'c20487c9a80f92562077a444c010a96a798b46d0'),
+              'legacy.part002': (8000, '31b255f62a21b437209cc9a0852fb1981fa50e5a'),
+              'legacy.part003': (8000, 'd7f04be9d4a04684ba0cf1e6f187b084a193ff84'),
+              'legacy.part004': (8000, '843fe14bce6d8d7f40830bc61906b6d88ee7f6e5'),
+              'legacy.part005': (8000, '68de2e84f8677bd492ad987c5ede5bb66d89424d'),
+              'legacy.part006': (8000, '39cb41f03eacb8d69368b44e534da2351ac3991d'),
+              'legacy.part007a': (4000, '80a52c023514764c14a0f4e32d480ee139a44823'),
+              'legacy.part007b': (4000, '96601d869dc2a0bab1e1da528f412656c8849248'),
+              'legacy.part008a': (4000, 'bf56a5fc162760e026a02e7f1acf9837f4118375'),
+              'legacy.part008b': (4000, 'dd49bebfbe668339150695f22602609bf00260ef'),
+              'legacy.part009a': (4000, '3dd77cd97d0525219014597f3bd125f0e9946c7e'),
+              'legacy.part009b': (4000, '9bb9c9ebae9c4f3fb9c42456b7ab76ef1718f3dc'),
+              'legacy.part010a': (4000, '5d157743161e6cd0366ccf3c8d699b77486ba2a6'),
+              'legacy.part010b': (4000, '50b570ec8e43b7492556e032a2eadd8612c344ce'),
+              'legacy.part011a': (3000, '1261e60fe81916425b0a0b9288fa6e776bd65f56'),
+              'legacy.part011b': (2812, 'c71bacfe2e51830a1ba2e79840135dc9363bc6fc'),
+          }
+
+          alphabet = string.ascii_letters + string.digits + '+/='
+
+          def git_blob_sha(text):
+              data = text.encode('ascii')
+              return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+
+          def repair_one(text, target_len, target_sha):
+              if len(text) == target_len and git_blob_sha(text) == target_sha:
+                  return text, 'already exact'
+
+              if len(text) == target_len - 1:
+                  for pos in range(target_len):
+                      left, right = text[:pos], text[pos:]
+                      for ch in alphabet:
+                          candidate = left + ch + right
+                          if git_blob_sha(candidate) == target_sha:
+                              return candidate, f'inserted one character at {pos}'
+
+              if len(text) == target_len:
+                  chars = list(text)
+                  for pos, old in enumerate(chars):
+                      for ch in alphabet:
+                          if ch == old:
+                              continue
+                          chars[pos] = ch
+                          candidate = ''.join(chars)
+                          if git_blob_sha(candidate) == target_sha:
+                              return candidate, f'replaced one character at {pos}'
+                      chars[pos] = old
+
+                  chars = list(text)
+                  for pos in range(len(chars) - 1):
+                      if chars[pos] == chars[pos + 1]:
+                          continue
+                      chars[pos], chars[pos + 1] = chars[pos + 1], chars[pos]
+                      candidate = ''.join(chars)
+                      if git_blob_sha(candidate) == target_sha:
+                          return candidate, f'swapped adjacent characters at {pos}'
+                      chars[pos], chars[pos + 1] = chars[pos + 1], chars[pos]
+
+              raise RuntimeError(
+                  f'Unable to repair chunk: len={len(text)} target_len={target_len} sha={git_blob_sha(text)} target={target_sha}'
+              )
+
+          root = Path('src-bootstrap')
+          for name, (target_len, target_sha) in expected.items():
+              path = root / name
+              if not path.exists():
+                  raise SystemExit(f'Missing staged chunk: {name}')
+              text = path.read_text(encoding='ascii')
+              fixed, action = repair_one(text, target_len, target_sha)
+              if fixed != text:
+                  path.write_text(fixed, encoding='ascii')
+              actual = git_blob_sha(fixed)
+              if len(fixed) != target_len or actual != target_sha:
+                  raise SystemExit(f'Chunk verification failed after repair: {name}')
+              print(f'{name}: {action} | {actual}')
+          PY
+
       - name: Rebuild internal alpha/beta lineage
         shell: bash
         run: |
