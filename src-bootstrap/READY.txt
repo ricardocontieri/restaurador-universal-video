@@ -1,0 +1,4 @@
+Universal Video Restorer public source bootstrap
+Expected chain SHA256: 321590fc239086f8af21a6d48809aba432a6e78d6fa498b30cacd736c5f68d38
+Public version: 1.0.0
+Internal source lineage: V1.6.3.2
