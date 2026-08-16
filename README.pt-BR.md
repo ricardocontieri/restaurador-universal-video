@@ -69,6 +69,12 @@ Forks, relatos de codecs/hardware e melhorias são bem-vindos. Leia [CONTRIBUTIN
 
 Não envie mídia familiar privada apenas para demonstrar um bug. Prefira amostras sintéticas ou não sensíveis.
 
+## Estudos de casos reais
+
+O repositório mantém registros sanitizados de regressões observadas em lotes arquivísticos reais, permitindo preservar a memória técnica das correções sem publicar mídia privada.
+
+- [Concat Unicode-safe após restauração segmentada frame-exata](docs/case-studies/unicode-frame-exact-regression.md) — documenta uma falha tardia de concat causada por caminho-pai com Unicode, a correção por caminhos relativos ASCII, o reaproveitamento dos checkpoints, 173 segmentos de timeline e a validação final 4/4.
+
 ## Estado do projeto
 
 Este é um instrumento prático de restauração, não um produto comercial polido. A primeira versão pública representa a linha do pipeline que sobreviveu a múltiplos lotes reais, inclusive MPEG-1 VFR legado e clipes muito curtos. Ainda há áreas conhecidas para evolução; veja [ROADMAP.md](docs/ROADMAP.md).
