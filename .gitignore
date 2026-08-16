@@ -1,0 +1,42 @@
+# Media and generated outputs
+*.mp4
+*.mov
+*.avi
+*.mpg
+*.mpeg
+*.mkv
+*.m4a
+*.wav
+*.aac
+*.wmv
+*.mts
+*.m2ts
+*.webm
+
+_PROCESSADOS_1080P_ESTABILIZADOS/
+_RESTAURACAO*/
+_WORK/
+FINAL/
+SEGMENTOS/
+*.trf
+
+# Generated logs/reports
+*.log
+MAPA_VIDEOS_IDENTIFICADOS.csv
+RELATORIO_EXECUCAO.csv
+RESUMO_EXECUCAO.txt
+BENCHMARK_GPU.csv
+METADADOS_DATAS.csv
+RELATORIO_ATUALIZACAO_METADADOS.csv
+ERRO_DETALHADO.txt
+
+# Temporary / backup
+*.tmp
+*.bak
+*.part
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
