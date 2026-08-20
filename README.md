@@ -2,8 +2,11 @@
 
 [Português](README.pt-BR.md)
 
-**Current public release: 1.0.0**  
-Internal lineage: `V1.6.3.2`
+**Current stable release: 1.0.0**  
+**Current release candidate: 1.0.1-RC3** (`release/1.0.1-rc3`)  
+Internal stable lineage: `V1.6.3.2`
+
+> RC3 is an A/B-calibrated candidate with more selective scene-aware stabilization, spatial tracking consensus, transition reacquisition and voice-safe audio. Stable `1.0.1` remains gated by the calibration blind test. See [RC3 release notes](docs/releases/1.0.1-rc3.md).
 
 Universal Video Restorer is a Windows PowerShell + FFmpeg pipeline for restoring and normalizing personal or archival video collections into reusable 1080p masters while keeping technical and historical traceability.
 
@@ -61,7 +64,7 @@ See [Forensic metadata policy](docs/FORENSIC_METADATA.md).
 
 ## Versioning
 
-`1.0.0` is the **first public release**. All earlier internal iterations are classified as alpha/beta development builds and preserved under `legacy/`. Their original internal banners are intentionally left unchanged for provenance. See [VERSIONING.md](docs/VERSIONING.md).
+`1.0.0` is the first stable public release. `1.0.1-RC3` is the current release candidate and remains under blind calibration before promotion to stable `1.0.1`. All earlier internal iterations are classified as alpha/beta development builds and preserved under `legacy/`. Their original internal banners are intentionally left unchanged for provenance. See [VERSIONING.md](docs/VERSIONING.md).
 
 ## Contributing and forks
 
