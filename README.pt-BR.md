@@ -2,8 +2,11 @@
 
 [English](README.md)
 
-**Versão pública atual: 1.0.0**  
-Linhagem interna: `V1.6.3.2`
+**Versão estável atual: 1.0.0**  
+**Release candidate atual: 1.0.1-RC3** (`release/1.0.1-rc3`)  
+Linhagem interna estável: `V1.6.3.2`
+
+> A RC3 é uma candidata calibrada por teste A/B, com estabilização scene-aware mais seletiva, consenso espacial de tracking, reacquisition em transições difíceis e áudio voice-safe. A promoção para `1.0.1` estável continua condicionada ao teste cego de calibração. Veja as [notas da RC3](docs/releases/1.0.1-rc3.md).
 
 O Restaurador Universal de Vídeos é um pipeline em PowerShell + FFmpeg para restaurar e normalizar coleções pessoais ou arquivísticas de vídeo, produzindo masters 1080p reutilizáveis e mantendo rastreabilidade técnica e histórica.
 
@@ -61,7 +64,7 @@ Veja [Política de metadados e proveniência](docs/FORENSIC_METADATA.md).
 
 ## Versionamento
 
-`1.0.0` é a **primeira versão pública**. Todas as iterações internas anteriores são classificadas como builds alpha/beta e ficam preservadas em `legacy/`. Os banners e números internos desses scripts não são alterados, deliberadamente, para manter sua proveniência. Veja [VERSIONING.md](docs/VERSIONING.md).
+`1.0.0` é a primeira versão pública estável. `1.0.1-RC3` é a candidata atual e permanece em calibração cega antes da promoção para `1.0.1` estável. Todas as iterações internas anteriores são classificadas como builds alpha/beta e ficam preservadas em `legacy/`. Os banners e números internos desses scripts não são alterados, deliberadamente, para manter sua proveniência. Veja [VERSIONING.md](docs/VERSIONING.md).
 
 ## Contribuições e forks
 
