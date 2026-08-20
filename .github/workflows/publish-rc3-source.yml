@@ -1,0 +1,54 @@
+name: Publish RC3 source
+
+on:
+  push:
+    paths:
+      - 'src-bootstrap-rc3/READY.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rebuild and verify RC3 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat src-bootstrap-rc3/payload.part* > /tmp/rc3.b64
+          base64 -d /tmp/rc3.b64 > /tmp/rc3.ps1.gz
+          echo 'd62cc8e71f5c37baebc9460b6a4ce47c11493b26ad3d2da0e46ab5bc8832b344  /tmp/rc3.ps1.gz' | sha256sum -c -
+          gzip -dc /tmp/rc3.ps1.gz > src/RestauradorUniversal.ps1
+          echo '18f3a9dbac5d332be1b6e7df37d04579a816b3850736590ac5d972db91c0c506  src/RestauradorUniversal.ps1' | sha256sum -c -
+          grep -qF '$PublicVersion = "1.0.1-RC3"' src/RestauradorUniversal.ps1
+          grep -qF 'UVR_ADAPTIVE_STAB_V4_AB_CALIBRATED' src/RestauradorUniversal.ps1
+          ! grep -qF 'RC3-PREVIEW2' src/RestauradorUniversal.ps1
+
+      - name: PowerShell parser validation
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'src/RestauradorUniversal.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | Format-List | Out-String | Write-Error
+            exit 1
+          }
+
+      - name: Commit verified RC3 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- src/RestauradorUniversal.ps1
+          git commit -m 'Publish v1.0.1-RC3 source'
+          git push
