@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.0.1-RC3 — A/B-calibrated release candidate
+
+Release candidate calibrated from blind side-by-side comparisons between the RC2 adaptive-stabilization baseline and the RC3 Preview2 line.
+
+Highlights:
+
+- narrows the photometric guard so weak transitions remain on the proven RC2-style base profile;
+- adds spatial tracking consensus across full-frame and regional detector views for local motion and transient occlusion;
+- adds selective tracking reacquisition for difficult low-light and strong photometric transitions;
+- makes dynamic-motion overrides more selective to reduce over-correction;
+- keeps detector-only preprocessing isolated from master pixels;
+- introduces voice-safe adaptive audio with substantially lighter denoise and conservative high-pass filtering;
+- preserves exact frame census, checkpoint/resume, conservative pillarbox deep-check, provenance hashes, historical timestamp policy, CUDA/QSV benchmarking, Unicode-safe concat and final mux without `-shortest`;
+- extends stabilization diagnostics with detector region, spatial agreement, transition quality and calibration policy.
+
+### Validation status
+
+The RC3 source passed static structural validation and isolated FFmpeg-chain tests. Promotion to stable `1.0.1` remains gated by the 14-case blind comparison against the best prior result for each calibration clip. The first complete PowerShell 7.6.5 run remains the authoritative runtime validation.
+
+### Known cosmetic correction
+
+The assembled RC3 source carries `PublicVersion = 1.0.1-RC3`; the publication candidate also corrects the stale Preview2 console banner/audio wording without changing processing logic.
+
 ## 1.0.0 — first public release
 
 Public baseline derived from internal build `V1.6.3.2`.
