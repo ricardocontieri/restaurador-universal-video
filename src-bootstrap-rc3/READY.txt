@@ -1,0 +1,4 @@
+Universal Video Restorer RC3 source publish trigger
+Expected source SHA256: 18f3a9dbac5d332be1b6e7df37d04579a816b3850736590ac5d972db91c0c506
+Expected gzip SHA256: d62cc8e71f5c37baebc9460b6a4ce47c11493b26ad3d2da0e46ab5bc8832b344
+Public version: 1.0.1-RC3
