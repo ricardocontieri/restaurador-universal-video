@@ -1,0 +1,22 @@
+Universal Video Restorer — 1.0.1-RC3 source package
+
+This directory contains the exact, compressed RC3 source split only for transport.
+The launcher at ../RestauradorUniversal.ps1 reconstructs and SHA-256 verifies it before execution.
+
+Expected materialized source:
+  file: RestauradorUniversal_v1.0.1_RC3.ps1
+  bytes: 307068
+  lines: 10883
+  SHA-256: 18f3a9dbac5d332be1b6e7df37d04579a816b3850736590ac5d972db91c0c506
+  Git blob SHA-1: 5e6f2a40eb267f6239b89319b0b35a6620534ed4
+
+Compressed payload:
+  gzip SHA-256: d62cc8e71f5c37baebc9460b6a4ce47c11493b26ad3d2da0e46ab5bc8832b344
+  parts: 5
+
+Identity checks in the materialized source:
+  PublicVersion: 1.0.1-RC3
+  AdaptiveStabSchema: UVR_ADAPTIVE_STAB_V4_AB_CALIBRATED
+
+To materialize a standalone readable source file:
+  pwsh -NoProfile -ExecutionPolicy Bypass -File .\Materializar-RC3.ps1
