@@ -28,3 +28,27 @@ A window enters the safe fallback when diagnostic evidence indicates low reliabi
 Reliable windows may use conservative MCI. High-risk windows preserve the source cadence after cleanup, avoiding invented local motion.
 
 Speed remains part of acceptance criteria. The adaptive gate should also reduce cost by avoiding expensive motion interpolation where it is least trustworthy.
+
+## R2 blind A/B outcome — 2026-08-22
+
+The second bench explicitly separated spatial cleanup from cadence reconstruction on the `Albino toca o barco` ULQ calibration clip.
+
+Blind result: **AB03-A was preferred overall**. After unblinding, AB03-A corresponds to `v3_cleanup_strong`, a spatial-cleanup path that preserves the stored cadence.
+
+Key findings:
+
+- `v3_cleanup_strong` materially improved denoise/compression cleanup without introducing the temporal failures seen in the synthetic-motion variants.
+- MCI materially improved perceived anti-shake and intermediate frames in reliable regions, but damaged pans and abrupt camera motion with local warping / bad synthesized frames.
+- Blend-style cadence reconstruction could appear smoother in transitions, but did not provide a sufficiently good stability/quality trade-off.
+- Full pipelines that combined cleanup with current MCI remained poor because temporal artifacts dominated the result.
+- Spatial cleanup and temporal reconstruction must therefore be evaluated and gated independently.
+
+Decision after R2:
+
+1. Treat `v3_cleanup_strong` as the current **experimental ULQ spatial baseline**.
+2. Do not promote current MCI or blend variants as always-on cadence reconstruction.
+3. Preserve source cadence when temporal confidence is low, especially during pans and abrupt movement.
+4. Evaluate true stabilization / anti-shake separately from synthetic-frame generation.
+5. Start the next temporal bench from the spatial winner instead of from the failed MCI hybrids.
+
+Full blind mapping, QA measurements and evaluation notes are recorded in `AB_R2_RESULTS.md`.
